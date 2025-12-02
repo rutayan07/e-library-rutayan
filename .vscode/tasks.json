@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Backend (Maven)",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "-f",
+        "backend/pom.xml",
+        "clean",
+        "package"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Run with Tomcat (mvn tomcat7:run)",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "-f",
+        "backend/pom.xml",
+        "tomcat7:run"
+      ],
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

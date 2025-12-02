@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>E-Library Management System — UI Prototype</title>
+  <style>
+    :root{--brand-500:#0ea5a4;--brand-600:#0b9a98;--accent:#2563eb;--muted:#6b7280;--bg:#ffffff;--card-bg:#fbfdff;--glass:rgba(14,165,164,0.06);--radius:12px;--shadow:0 6px 18px rgba(16,24,40,0.08);--max-width:1200px;--gap:16px}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#f8fdff 0%,#f3f9fb 100%);color:#0f172a}
+    a{color:inherit;text-decoration:none}.app{max-width:var(--max-width);margin:28px auto;padding:20px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px}
+    .brand{display:flex;gap:12px;align-items:center}.brand .logo{width:44px;height:44px;border-radius:10px;background:var(--brand-500);display:grid;place-items:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    .top-actions{display:flex;gap:12px;align-items:center}.btn{background:var(--brand-500);color:white;padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:600}.btn.secondary{background:transparent;color:var(--brand-600);border:1px solid rgba(11,154,152,0.12)}
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:20px}@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+    .sidebar{background:var(--bg);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);height:calc(100vh - 140px);position:sticky;top:20px}.nav{display:flex;flex-direction:column;gap:8px}.nav a{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;color:var(--muted)}.nav a.active{background:var(--glass);color:var(--brand-600);font-weight:600}
+    .main{min-height:60vh}.card{background:var(--card-bg);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}@media(max-width:900px){.grid{grid-template-columns:repeat(1,1fr)}}.summary{display:flex;flex-direction:column;gap:8px}.kpi{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:12px;background:white}
+    table{width:100%;border-collapse:collapse;background:white;border-radius:10px;overflow:hidden}thead{background:#f8fafc}th,td{padding:12px;text-align:left;border-bottom:1px solid #f1f5f9;font-size:14px}tr:hover td{background:linear-gradient(90deg,#fff 0%, #fbfeff 100%)}.searchbar{display:flex;gap:10px;align-items:center}input[type=text],select{padding:10px;border-radius:10px;border:1px solid #e6eef2;outline:none}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.35);display:none;align-items:center;justify-content:center}.modal{width:720px;max-width:95%;background:white;border-radius:12px;padding:18px}.modal header{font-weight:700;margin-bottom:8px}.form-row{display:flex;gap:12px;margin-bottom:10px}.form-row>*{flex:1}@media(max-width:600px){.form-row{flex-direction:column}}
+    .toaster{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:999}.toast{background:linear-gradient(90deg,#ffffff,#f8fff9);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);border-left:4px solid var(--brand-500)}
+    .muted{color:var(--muted)}.flex{display:flex;align-items:center;gap:12px}.space-between{display:flex;justify-content:space-between;align-items:center}.table-actions button{margin-right:8px}.hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">EL</div>
+        <div>
+          <h1>E-Library</h1>
+          <div class="muted" style="font-size:12px">Academic digital library prototype</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div id="currentRole" class="muted">Role: <strong>Guest</strong></div>
+        <button class="btn" id="btnOpenLogin">Login</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar card" id="sidebar">
+        <nav class="nav" id="navLinks">
+          <a href="#" data-view="dashboard" class="active">🏠 Dashboard</a>
+          <a href="#" data-view="books">📚 Books</a>
+          <a href="#" data-view="users" data-role="admin">👥 Users</a>
+          <a href="#" data-view="history">🕘 Borrowing History</a>
+          <a href="#" data-view="styleguide">🎨 Style Guide</a>
+          <div style="height:8px"></div>
+          <div class="muted" style="font-size:12px">Tip: use the mock login to switch roles.</div>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="view" id="dashboardView">
+          <div class="grid" style="margin-bottom:16px">
+            <div class="card summary">
+              <div class="space-between"><div><strong>Welcome back</strong><div class="muted" style="font-size:12px">Overview</div></div><div class="muted">Today</div></div>
+              <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+                <div class="kpi" style="min-width:160px">
+                  <div>
+                    <div class="muted" style="font-size:12px">Total Books</div>
+                    <div style="font-size:20px" id="kpiBooks">0</div>
+                  </div>
+                  <div>📚</div>
+                </div>
+                <div class="kpi" style="min-width:160px">
+                  <div>
+                    <div class="muted" style="font-size:12px">Active Students</div>
+                    <div style="font-size:20px" id="kpiUsers">0</div>
+                  </div>
+                  <div>👩‍🎓</div>
+                </div>
+                <div class="kpi" style="min-width:160px">
+                  <div>
+                    <div class="muted" style="font-size:12px">Borrowed Today</div>
+                    <div style="font-size:20px" id="kpiBorrowed">0</div>
+                  </div>
+                  <div>🔁</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="grid-column: span 2;">
+              <div class="space-between"><strong>Quick Search</strong>
+                <div class="searchbar">
+                  <input type="text" id="globalSearch" placeholder="Search books by title, author, or ISBN" />
+                  <button class="btn secondary" id="btnSearch">Search</button>
+                </div>
+              </div>
+              <div id="searchResults" style="margin-top:12px"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="space-between"><strong>Recent Borrowings</strong><div class="muted" id="recentCount">0 records</div></div>
+            <div style="margin-top:12px">
+              <table id="recentTable">
+                <thead><tr><th>Book</th><th>Student</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view hidden" id="booksView">
+          <div class="space-between" style="margin-bottom:12px">
+            <div><strong>Books</strong><div class="muted" style="font-size:12px">Browse and manage the collection</div></div>
+            <div class="flex">
+              <input type="text" id="booksSearch" placeholder="Search books...">
+              <button class="btn secondary" id="btnOpenAddBook">Add Book</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <table id="booksTable">
+              <thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Copies</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view hidden" id="usersView">
+          <div class="space-between" style="margin-bottom:12px">
+            <div><strong>Users</strong><div class="muted" style="font-size:12px">Manage students and staff</div></div>
+            <div class="flex">
+              <input type="text" id="usersSearch" placeholder="Search users...">
+              <button class="btn secondary" id="btnOpenAddUser">Add User</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <table id="usersTable">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view hidden" id="historyView">
+          <div class="space-between" style="margin-bottom:12px"><div><strong>Borrowing History</strong><div class="muted" style="font-size:12px">Records of borrows and returns</div></div>
+            <div><input type="text" id="historyFilter" placeholder="Filter by student or book..." /></div></div>
+          <div class="card">
+            <table id="historyTable"><thead><tr><th>Book</th><th>Student</th><th>Borrow Date</th><th>Return Date</th><th>Status</th></tr></thead><tbody></tbody></table>
+          </div>
+        </section>
+
+        <section class="view hidden" id="bookDetailView">
+          <div class="card">
+            <div class="space-between"><div><strong id="detailTitle">Book Title</strong><div class="muted" id="detailAuthor">Author</div></div>
+            <div><button class="btn" id="btnBorrowThis">Borrow</button></div></div>
+            <div style="margin-top:12px" id="detailBody"></div>
+          </div>
+        </section>
+
+        <section class="view hidden" id="styleguideView">
+          <div class="card styleguide">
+            <h3>Style Guide</h3>
+            <p class="muted">Colors, fonts, spacing and reusable components used in this UI.</p>
+            <div style="margin-top:12px">
+              <div class="swatches">
+                <div class="swatch" style="background:var(--brand-500)">Teal</div>
+                <div class="swatch" style="background:var(--brand-600)">Teal 600</div>
+                <div class="swatch" style="background:var(--accent)">Blue</div>
+                <div class="swatch" style="background:#10b981">Green</div>
+              </div>
+
+              <h4 style="margin-top:12px">Typography</h4>
+              <div class="component-preview">
+                <div style="padding:12px;background:white;border-radius:8px">H1 — E-Library (font-weight:700)</div>
+                <div style="padding:12px;background:white;border-radius:8px">Body — Inter / system fonts</div>
+              </div>
+
+              <h4 style="margin-top:12px">Buttons & Inputs</h4>
+              <div class="component-preview"><button class="btn">Primary</button><button class="btn secondary">Secondary</button><input placeholder="input"/></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal" id="modalContent">
+        <header id="modalTitle">Modal</header>
+        <div id="modalBody"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+          <button class="btn secondary" id="modalCancel">Cancel</button>
+          <button class="btn" id="modalSave">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toaster" id="toaster"></div>
+
+  </div>
+
+  <script>
+// Frontend now wired to backend API endpoints (servlets under /api/*)
+// It falls back to in-memory mock data when backend calls fail.
+
+const API_ROOT = "http://localhost:8080/api"; // adjust if your app is deployed under a context path (e.g. /e-library/api)
+
+const state = {
+  role: 'guest', // 'admin' | 'student' | 'guest'
+  currentUser: null,
+  books: [],
+  users: [],
+  history: [] // history is kept client-side for now; you can implement /api/history on server later
+};
+
+const $ = (sel)=>document.querySelector(sel);
+const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
+function showToast(text){
+  const t=document.createElement('div');t.className='toast';t.textContent=text;$('#toaster').appendChild(t);
+  setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),400)},2200);
+}
+
+// --- API helpers ---
+async function apiGet(path){
+  const res = await fetch(API_ROOT + path, {credentials: 'same-origin'});
+  if(!res.ok) throw new Error('Network response was not ok');
+  return res.json();
+}
+async function apiPost(path, body){
+  const res = await fetch(API_ROOT + path, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok) throw new Error('Network response was not ok');
+  return res.json();
+}
+async function apiDelete(path){
+  const res = await fetch(API_ROOT + path, {method:'DELETE'});
+  if(!res.ok && res.status!==204) throw new Error('Delete failed');
+  return res;
+}
+
+// --- Loaders ---
+async function loadBooksFromServer(){
+  try{
+    const books = await apiGet('/books');
+    state.books = books || [];
+  }catch(err){
+    console.warn('Failed to load books from server, using mock data', err);
+    // fallback sample data
+    if(state.books.length===0){
+      state.books = [
+        {id:1,title:'Intro to Algorithms',author:'Cormen',isbn:'9780262033848',copies:3,desc:'Algorithmic foundations'},
+        {id:2,title:'Clean Code',author:'Robert C. Martin',isbn:'9780132350884',copies:2,desc:'A handbook of agile software craftsmanship'}
+      ];
+    }
+    showToast('Could not reach backend — running in offline mode');
+  }
+}
+
+async function loadUsersFromServer(){
+  try{
+    const users = await apiGet('/users');
+    state.users = users || [];
+  }catch(err){
+    console.warn('Failed to load users from server, using mock data', err);
+    if(state.users.length===0){
+      state.users = [
+        {id:1,name:'Alice Sharma',email:'alice@example.com',role:'student'},
+        {id:2,name:'Dr. Raj',email:'raj@example.edu',role:'admin'}
+      ];
+    }
+  }
+}
+
+// --- CRUD actions that call server ---
+async function createOrUpdateBook(book){
+  try{
+    const saved = await apiPost('/books', book);
+    // replace or push
+    const idx = state.books.findIndex(b=>b.id===saved.id);
+    if(idx>=0) state.books[idx] = saved; else state.books.push(saved);
+    showToast('Saved book');
+    renderBooks();
+    renderDashboard();
+    return saved;
+  }catch(err){
+    console.error(err);
+    showToast('Failed to save to server');
+    // optimistic local save
+    if(!book.id){ book.id = Date.now(); state.books.push(book); }
+    renderBooks(); renderDashboard();
+    return book;
+  }
+}
+
+async function deleteBookApi(id){
+  try{
+    await apiDelete('/books/' + id);
+    state.books = state.books.filter(b=>b.id!==id);
+    showToast('Deleted book');
+    renderBooks(); renderDashboard();
+  }catch(err){
+    console.warn('Delete failed, removing locally', err);
+    state.books = state.books.filter(b=>b.id!==id);
+    renderBooks(); renderDashboard();
+  }
+}
+
+async function createOrUpdateUser(user){
+  try{
+    const saved = await apiPost('/users', user);
+    const idx = state.users.findIndex(u=>u.id===saved.id);
+    if(idx>=0) state.users[idx] = saved; else state.users.push(saved);
+    showToast('Saved user');
+    renderUsers();
+    return saved;
+  }catch(err){
+    console.error(err);
+    showToast('Failed to save user to server');
+    if(!user.id){ user.id = Date.now(); state.users.push(user); }
+    renderUsers();
+    return user;
+  }
+}
+
+async function deleteUserApi(id){
+  try{
+    await apiDelete('/users/' + id);
+    state.users = state.users.filter(u=>u.id!==id);
+    showToast('Deleted user');
+    renderUsers();
+  }catch(err){
+    console.warn('Delete failed, removing locally', err);
+    state.users = state.users.filter(u=>u.id!==id);
+    renderUsers();
+  }
+}
+
+// --- Auth mock via server ---
+async function loginMock(role){
+  try{
+    const res = await apiPost('/auth', {role});
+    if(res.user){ state.currentUser = res.user; state.role = res.role || role; }
+    else { state.currentUser = null; state.role = res.role || role; }
+  }catch(err){
+    // fallback
+    if(role === 'student') state.currentUser = state.users.find(u=>u.role==='student') || null;
+    else if(role === 'admin') state.currentUser = state.users.find(u=>u.role==='admin') || null;
+    state.role = role;
+    showToast('Auth server unreachable — using mock role');
+  }
+  setRole(state.role);
+}
+
+// --- UI rendering & interactions ---
+function setRole(role){
+  state.role = role;
+  $('#currentRole').innerHTML = `Role: <strong>${role}</strong>`;
+  $$('#navLinks a').forEach(a=>{
+    const only = a.dataset.role;
+    if(only && only==='admin') a.style.display = (role==='admin') ? 'flex' : 'none';
+  });
+  navigateTo('dashboard');
+}
+
+function navigateTo(view){
+  $$('.view').forEach(v=>v.classList.add('hidden'));
+  const el = document.getElementById(view+'View');
+  if(el) el.classList.remove('hidden');
+  $$('#navLinks a').forEach(a=>a.classList.toggle('active', a.dataset.view===view));
+  if(view==='books') renderBooks();
+  if(view==='users') renderUsers();
+  if(view==='history') renderHistory();
+  if(view==='dashboard') renderDashboard();
+  if(view==='bookDetail') renderBookDetail();
+}
+
+$$('#navLinks a').forEach(a=>a.addEventListener('click', e=>{ e.preventDefault(); navigateTo(a.dataset.view); }));
+
+function renderDashboard(){
+  $('#kpiBooks').textContent = state.books.length;
+  $('#kpiUsers').textContent = state.users.filter(u=>u.role==='student').length;
+  $('#kpiBorrowed').textContent = state.history.filter(h=>h.status==='borrowed').length;
+
+  const tbody = $('#recentTable tbody'); tbody.innerHTML = '';
+  state.history.slice().reverse().slice(0,6).forEach(h=>{
+    const book = state.books.find(b=>b.id===h.bookId);
+    const user = state.users.find(u=>u.id===h.userId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${book?.title||'—'}</td><td>${user?.name||'—'}</td><td>${h.borrowDate}</td><td>${h.status}</td>`;
+    tbody.appendChild(tr);
+  });
+  $('#recentCount').textContent = state.history.length + ' records';
+}
+
+function renderBooks(filter){
+  const tbody = $('#booksTable tbody'); tbody.innerHTML = '';
+  const q = (filter || $('#booksSearch').value || '').toLowerCase();
+  state.books.filter(b=> (b.title+b.author+b.isbn).toLowerCase().includes(q)).forEach(b=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><a href='#' class='link-book' data-id='${b.id}'>${b.title}</a></td><td>${b.author}</td><td>${b.isbn}</td><td>${b.copies}</td><td class='table-actions'></td>`;
+    tbody.appendChild(tr);
+    const actions = tr.querySelector('.table-actions');
+    const btnView = document.createElement('button'); btnView.className='btn secondary'; btnView.textContent='View'; btnView.addEventListener('click', ()=>openBookDetail(b.id)); actions.appendChild(btnView);
+    if(state.role==='admin'){
+      const btnEdit = document.createElement('button'); btnEdit.className='btn secondary'; btnEdit.textContent='Edit'; btnEdit.addEventListener('click', ()=>openBookModal(b)); actions.appendChild(btnEdit);
+      const btnDel = document.createElement('button'); btnDel.className='btn'; btnDel.style.background='#ef4444'; btnDel.textContent='Delete'; btnDel.addEventListener('click', ()=>deleteBookApi(b.id)); actions.appendChild(btnDel);
+    } else {
+      const btnBorrow = document.createElement('button'); btnBorrow.className='btn'; btnBorrow.textContent='Borrow'; btnBorrow.addEventListener('click', ()=>borrowBook(b.id)); actions.appendChild(btnBorrow);
+    }
+  });
+  $$('.link-book').forEach(a=>a.addEventListener('click', e=>{ e.preventDefault(); openBookDetail(+a.dataset.id); }));
+}
+
+function openBookModal(book){
+  showModal('Book', '<div class=\"form-row\"><input id=\"mTitle\" placeholder=\"Title\" value=\"'+(book?book.title:'')+'\"/><input id=\"mAuthor\" placeholder=\"Author\" value=\"'+(book?book.author:'')+'\"/></div><div class=\"form-row\"><input id=\"mISBN\" placeholder=\"ISBN\" value=\"'+(book?book.isbn:'')+'\"/><input id=\"mCopies\" placeholder=\"Copies\" type=\"number\" value=\"'+(book?book.copies:1)+'\"/></div><div><textarea id=\"mDesc\" placeholder=\"Description\" style=\"width:100%;height:80px\">'+(book?book.description||book.desc:'')+'</textarea></div>');
+  $('#modalSave').onclick = async ()=>{
+    const payload = { id: book? book.id : 0, title: $('#mTitle').value, author: $('#mAuthor').value, isbn: $('#mISBN').value, copies: +$('#mCopies').value, description: $('#mDesc').value };
+    await createOrUpdateBook(payload);
+    hideModal();
+  };
+}
+
+function openBookDetail(id){ 
+      // find book by id to get isbn or title
+      const b = state.books.find(x=>x.id===id);
+      const isbn = b ? (b.isbn || '') : '';
+      const q = b ? b.title : '';
+      const endpoint = API_ROOT + '/book/details?' + (isbn? ('isbn=' + encodeURIComponent(isbn)) : ('q=' + encodeURIComponent(q)));
+      showModal('Loading','<div class=muted>Loading book details…</div>');
+      fetch(endpoint).then(r=>{ if(!r.ok) throw new Error('Fetch failed'); return r.json(); }).then(detail=>{
+        const authors = detail.authors ? detail.authors.join(', ') : '';
+        const html = `<div style="display:flex;gap:12px"><div style="flex:1"><h3>${detail.title||''}</h3><div class=muted>${authors}</div><div style="margin-top:8px"><strong>ISBN:</strong> ${detail.isbn||isbn||'—'}</div><div style="margin-top:8px"><strong>Publisher:</strong> ${detail.publisher||'—'}</div><div style="margin-top:8px"><strong>Pages:</strong> ${detail.pageCount||'—'}</div><div style="margin-top:8px"><strong>Estimated Price (USD):</strong> $${detail.price||'—'}</div></div><div style="width:160px"><img src=\"${detail.thumbnail||''}\" style=\"max-width:140px;border-radius:8px\" onerror=\"this.style.display='none'\"/></div></div><div style=\"margin-top:10px\">${detail.description||'<span class=muted>No description available.</span>'}</div>`;
+        $('#modalTitle').textContent = 'Book details';
+        $('#modalBody').innerHTML = html;
+        $('#modalSave').onclick = ()=>{ hideModal(); };
+      }).catch(err=>{ $('#modalBody').innerHTML = '<div class=muted>Could not load details.</div>'; console.error(err); });
+    }
+function renderBookDetail(){ const b = state._viewBook; if(!b) return; $('#detailTitle').textContent = b.title; $('#detailAuthor').textContent = b.author; $('#detailBody').innerHTML = `<p class='muted'>ISBN: ${b.isbn} • Copies: ${b.copies}</p><p style='margin-top:8px'>${b.description||b.desc||''}</p>`; $('#btnBorrowThis').onclick = ()=>borrowBook(b.id); }
+
+function renderUsers(filter){
+  const tbody = $('#usersTable tbody'); tbody.innerHTML = '';
+  const q = (filter || $('#usersSearch').value || '').toLowerCase();
+  state.users.filter(u=> (u.name+u.email).toLowerCase().includes(q)).forEach(u=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td class='table-actions'></td>`;
+    tbody.appendChild(tr);
+    const actions = tr.querySelector('.table-actions');
+    const btnEdit = document.createElement('button'); btnEdit.className='btn secondary'; btnEdit.textContent='Edit'; btnEdit.addEventListener('click', ()=>openUserModal(u)); actions.appendChild(btnEdit);
+    const btnDel = document.createElement('button'); btnDel.className='btn'; btnDel.style.background='#ef4444'; btnDel.textContent='Delete'; btnDel.addEventListener('click', ()=>deleteUserApi(u.id)); actions.appendChild(btnDel);
+  });
+}
+
+function openUserModal(user){
+  showModal('User', '<div class=\"form-row\"><input id=\"uName\" placeholder=\"Full name\" value=\"'+(user?user.name:'')+'\"/><input id=\"uEmail\" placeholder=\"Email\" value=\"'+(user?user.email:'')+'\"/></div><div class=\"form-row\"><select id=\"uRole\"><option value=\"student\">Student</option><option value=\"admin\">Admin</option></select></div>');
+  if(user) $('#uRole').value = user.role;
+  $('#modalSave').onclick = async ()=>{
+    const p = { id: user? user.id : 0, name: $('#uName').value, email: $('#uEmail').value, role: $('#uRole').value };
+    await createOrUpdateUser(p);
+    hideModal();
+  };
+}
+
+async function borrowBook(bookId){
+  if(state.role!=='student') return showToast('Only students can borrow — use mock login as student');
+  const book = state.books.find(b=>b.id===bookId);
+  if(!book || book.copies<1) return showToast('No copies available');
+  // reduce copies locally and add history record. Server-side history endpoint is optional.
+  book.copies -= 1;
+  const rec = { id: Date.now(), bookId, userId: state.currentUser?state.currentUser.id:0, borrowDate: new Date().toISOString().slice(0,10), returnDate:null, status:'borrowed' };
+  state.history.push(rec);
+  showToast('Book borrowed');
+  renderBooks(); renderHistory(); renderDashboard();
+  // optional: you can call a /api/history endpoint to persist this
+}
+
+function renderHistory(filter){
+  const tbody = $('#historyTable tbody'); tbody.innerHTML = '';
+  state.history.slice().reverse().forEach(h=>{
+    const book = state.books.find(b=>b.id===h.bookId);
+    const user = state.users.find(u=>u.id===h.userId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${book?.title||'—'}</td><td>${user?.name||'—'}</td><td>${h.borrowDate}</td><td>${h.returnDate||'—'}</td><td>${h.status}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Modals & search
+function showModal(title, html){ $('#modalTitle').textContent = title; $('#modalBody').innerHTML = html; $('#modalBackdrop').style.display='flex'; }
+function hideModal(){ $('#modalBackdrop').style.display='none'; }
+$('#modalCancel').addEventListener('click', hideModal);
+$('#btnOpenAddBook').addEventListener('click', ()=>openBookModal(null));
+$('#btnOpenAddUser').addEventListener('click', ()=>openUserModal(null));
+
+$('#btnSearch').addEventListener('click', ()=>{
+  const q = $('#globalSearch').value.trim(); if(!q) return showToast('Type a query');
+  const matches = state.books.filter(b=> (b.title+b.author+b.isbn).toLowerCase().includes(q.toLowerCase()));
+  const el = $('#searchResults'); el.innerHTML='';
+  if(matches.length===0) el.innerHTML = '<div class=\"muted\">No matches</div>';
+  matches.forEach(m=>{ const d = document.createElement('div'); d.className='card'; d.style.marginTop='8px'; d.innerHTML = `<div class='space-between'><div><strong>${m.title}</strong><div class='muted'>${m.author} • ${m.isbn}</div></div><div><button class='btn' onclick='openBookDetail(${m.id})'>Open</button></div></div>`; el.appendChild(d); });
+});
+
+$('#btnOpenLogin').addEventListener('click', ()=>{
+  showModal('Mock Login', `<div class="form-row"><select id=loginRole><option value=guest>Guest</option><option value=student>Student (Alice)</option><option value=admin>Admin (Dr. Raj)</option></select></div><div class=muted style=font-size:13px>Use this to switch role-based views. This is a mock; integrate with real auth when backend available.</div>`);
+  $('#modalSave').onclick = async ()=>{
+    const r = $('#loginRole').value;
+    await loginMock(r);
+    hideModal();
+    showToast('Switched role to '+r);
+  }
+});
+
+$('#booksSearch').addEventListener('input', ()=>renderBooks());
+$('#usersSearch').addEventListener('input', ()=>renderUsers());
+$('#historyFilter').addEventListener('input', ()=>renderHistory());
+
+// Init: load from server then render
+(async function init(){
+  await Promise.all([loadBooksFromServer(), loadUsersFromServer()]);
+  // no history endpoint yet; keep empty or seeded client-side
+  state.history = [];
+  setRole('guest');
+  renderBooks(); renderUsers(); renderHistory(); renderDashboard();
+})();
+
+// Expose helper for inline buttons
+window.openBookDetail = (id)=>{ openBookDetail(id) };
+</script>
+</body>
+</html>

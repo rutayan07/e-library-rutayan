@@ -1,0 +1,10 @@
+com\elibrary\servlet\UserServlet.class
+com\elibrary\dao\DBConnection.class
+com\elibrary\servlet\BookServlet.class
+com\elibrary\model\Book.class
+com\elibrary\servlet\AuthServlet.class
+com\elibrary\model\User.class
+com\elibrary\servlet\BookDetailsServlet.class
+com\elibrary\model\BookDetail.class
+com\elibrary\dao\BookDAO.class
+com\elibrary\dao\UserDAO.class
