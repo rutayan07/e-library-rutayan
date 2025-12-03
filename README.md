@@ -1,241 +1,174 @@
-📚 E-Library Management System
+# 📚 E-Library Management System
 
-A modern full-stack web application for managing books, users, and borrowing operations.
+A modern **HTML/CSS/JS + Java Servlet + JDBC + MySQL** based E‑Library Management System.
+This project is designed for academic use and includes both **frontend UI** and **backend server architecture** with database connectivity.
 
-🚀 Overview
+---
 
-The E-Library Management System is a full-stack project built using:
+# 🚀 Features
 
-Frontend: HTML, CSS, JavaScript
+## ✅ Frontend (HTML + CSS + JS)
 
-Backend: Java Servlets, JDBC
+* Modern responsive UI (blue/teal theme)
+* Login (mock role switch)
+* **Role-based dashboard** (Admin / Student)
+* Book management UI (CRUD)
+* User management UI (Admin only)
+* Borrow history page
+* Book details page
+* Dynamic tables, modals, notifications, search bars
+* Style guide for consistent design
 
-Database: MySQL
+## ✅ Backend (Java Servlets + JDBC)
 
-External APIs: Google Books API / RapidAPI (for extended book details)
+* Java Servlet API (REST-like JSON endpoints)
+* DAO layer (BookDAO, UserDAO)
+* JDBC MySQL connection handler
+* CRUD Servlets (Books, Users)
+* Mock Auth servlet
+* WAR‑package ready (Maven)
 
-The system supports role-based features for Admin and Students and provides a smooth, responsive UI with modern components like modals, toasts, sidebar navigation, and dynamic tables.
+## ✅ Database (MySQL)
 
-🎯 Features
-🔹 For Admin
+* `books`, `users`, `history` tables
+* Foreign key relations
+* Sample seed data
+* Database user creation and privileges
 
-Add, edit, delete books
+---
 
-Manage users
+# 📁 Project Structure
 
-View all borrowing records
-
-Access detailed book information through integrated Book API
-
-Dashboard with KPIs (Total Books, Active Students, Borrow Stats)
-
-🔹 For Students
-
-Browse and search books
-
-View detailed book pages
-
-Borrow books
-
-View personal borrowing history
-
-Clean and responsive UI
-
-🔹 Other Features
-
-API-based book details (thumbnail, pages, price, description)
-
-Modern UI — teal/blue theme, soft shadows, rounded corners
-
-Dynamic modals, toasts, tables, and filtering
-
-Fallback offline mode with 40 books preloaded
-
-REST API backend
-
-Session-based login system
-
-🏗️ Project Structure
+```
 e-library/
 ├── frontend/
-│   └── index.html        ← paste your full UI file here
+│   └── index.html              # Paste full UI file here
 ├── backend/
-│   ├── pom.xml
-│   ├── src/main/java/com/elibrary/
-│   │   ├── model/
-│   │   │   ├── Book.java
-│   │   │   └── User.java
-│   │   ├── dao/
-│   │   │   ├── DBConnection.java
-│   │   │   ├── BookDAO.java
-│   │   │   └── UserDAO.java
-│   │   └── servlet/
-│   │       ├── BookServlet.java
-│   │       ├── UserServlet.java
-│   │       └── AuthServlet.java
+│   ├── pom.xml                 # Maven build configuration
+│   ├── src/main/java/
+│   │   └── com/elibrary/
+│   │       ├── model/          # Book.java, User.java
+│   │       ├── dao/            # DBConnection.java, BookDAO.java, UserDAO.java
+│   │       └── servlet/        # BookServlet.java, UserServlet.java, AuthServlet.java
 │   └── src/main/webapp/WEB-INF/web.xml
 └── sql/
-    └── schema.sql
-    └──Migration_add_password.sql
-    └──migration_history.sql
+    └── schema.sql              # Create + seed DB
+```
 
-🗄️ Database Schema (MySQL)
-users
+---
 
-| id | name | email | password | role |
+# 🛠 Requirements
 
-books
+* **VS Code** or IntelliJ / Eclipse
+* **Java 11+**
+* **Apache Tomcat 9 or 10**
+* **MySQL 5.7+ / MariaDB**
+* **Maven**
 
-| id | title | author | isbn | copies | description |
+---
 
-borrowings
+# 🏗 Setup Instructions
 
-| id | userId | bookId | borrowDate | returnDate | status |
+## 1️⃣ Import Project
 
-🔌 Backend API Endpoints
-📘 Books
-Method	Endpoint	Description
-GET	/api/books	Get all books (with search filters)
-POST	/api/books	Add a new book (Admin)
-DELETE	/api/books/{id}	Delete book by ID
-GET	/api/books/details?isbn=	Get detailed book info (Google Books/RapidAPI)
-🔐 Authentication
-Method	Endpoint	Description
-POST	/api/auth/signup	User registration
-POST	/api/auth/login	Login and generate session
-POST	/api/auth/logout	Logout user
-👥 Users
-Method	Endpoint	Description
-GET	/api/users	List all users (Admin)
-GET	/api/users/{id}	Get user profile
-PUT	/api/users/{id}	Update user
-🔄 Borrowing
-Method	Endpoint	Description
-POST	/api/borrow	Borrow a book
-PUT	/api/return/{loanId}	Return book
-GET	/api/borrowing-history	User borrowing history
-⚙️ Setup Instructions
-1️⃣ Install Requirements
+1. Extract the project folder.
+2. Open the root folder in **VS Code**.
 
-Java JDK 17+
+---
 
-Apache Maven
+## 2️⃣ Setup Database
 
-MySQL Server
+1. Start MySQL
+2. Open `sql/schema.sql`
+3. Run the full script:
 
-Tomcat or Jetty
+   * Creates `elibrary` database
+   * Creates tables
+   * Inserts sample records
+   * Creates DB user `elibrary_user`
 
-2️⃣ Import Database
+Update DB credentials in:
 
-Run the provided SQL script:
+```
+backend/src/main/java/com/elibrary/dao/DBConnection.java
+```
 
-CREATE DATABASE elibrary;
-USE elibrary;
+---
 
--- tables: users, books, borrowings
--- insert sample data (40 books already included)
+## 3️⃣ Build Backend
 
-3️⃣ Configure Database in Backend
+In VS Code terminal:
 
-In DBConnection.java:
-
-private static final String URL = "jdbc:mysql://localhost:3306/elibrary";
-private static final String USER = "root";
-private static final String PASS = "yourpassword";
-
-4️⃣ Build & Run Backend
-Option A — Jetty
+```
+cd backend
 mvn clean package
-mvn jetty:run
+```
 
+This generates:
 
-Backend runs at:
+```
+target/e-library.war
+```
 
-http://localhost:8080
+---
 
-5️⃣ Run Frontend
+## 4️⃣ Deploy to Tomcat
 
-Just open:
+1. Copy the WAR file into:
 
-frontend/index.html
+   ```
+   tomcat/webapps/
+   ```
+2. Start Tomcat
+3. Open in browser:
 
+   ```
+   http://localhost:8080/e-library/static/index.html
+   ```
 
-or place it inside webapp/.
+---
 
-🎨 UI Components Included
+# 🔗 Connecting Frontend to Backend
 
-Sidebar navigation
+Replace mock JS with real `fetch()` calls to your servlets:
 
-Dashboard cards & KPIs
+Example (GET all books):
 
-Modal forms (Add/Edit)
+```javascript
+const books = await fetch('/e-library/api/books')
+                  .then(res => res.json());
+```
 
-Book detail popup
+Example (POST add book):
 
-Notification toasts
+```javascript
+await fetch('/e-library/api/books', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(bookObj)
+});
+```
 
-Responsive tables
+---
 
-Search & filter bars
+# 📌 Notes
 
-Style guide page
+* Current Java files are placeholders — replace them with full implementations.
+* Always secure sensitive DB credentials.
+* Add validation + real authentication if using for production.
 
-📷 Screenshots (placeholders)
+---
 
-Add your screenshots here later
+# ❤️ Author & Usage
 
-/screenshots/dashboard.png
-/screenshots/books.png
-/screenshots/book-detail.png
-/screenshots/history.png
+Created for academic/college project use.
+Feel free to modify and expand.
 
-🧠 API Integration
+---
 
-The system integrates with:
+If you want, I can:
+✅ Fill in **full real Java code** for all DAO + Servlet files
+✅ Connect your UI automatically to backend
+✅ Generate updated full project ZIP
 
-✔ Google Books API
-
-For ISBN-based details:
-
-Description
-
-Thumbnail
-
-Page count
-
-Authors
-
-Publishing info
-
-✔ RapidAPI (Optional)
-
-For price estimation and extended metadata.
-
-If the API fails → Offline Mode automatically loads 40 predefined books.
-
-🤝 Team Contribution
-
-Add names and roles here:
-
-Member	Role
-You	Frontend Developer
-—	Backend Developer
-—	Database Designer
-—	Documentation
-🏁 Conclusion
-
-This project demonstrates a complete, modern full-stack application with:
-
-REST APIs
-
-JDBC + SQL
-
-Advanced UI/UX
-
-External API integration
-
-Role-based system
-
-Borrow/Return workflow
-
-It is suitable for academic projects, mini projects, and professional portfolio work.
+Just tell me! 🚀
